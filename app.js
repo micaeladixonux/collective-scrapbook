@@ -12,7 +12,7 @@ const CONFIG = {
   defaultBrushSize: 4,
   defaultBrushColor: '#1a1a1a',
   
-  // Static list of sticker files (more reliable than guessing)
+  // Static list of sticker files
   stickerFiles: [
     '05.png', '06.png', '07.png', '08.png', '09.png',
     '10.png', '11.png', '12.png', '13.png', '14.png',
@@ -20,6 +20,30 @@ const CONFIG = {
     '20.png', '21.png', '22.png', '23.png', '24.png',
     '25.png', '26.png', '27.png', '28.png', '29.png',
     '30.png', '31.png', '32.png', '33.png', '34.png'
+  ],
+  
+  // Backup online stickers (always work)
+  onlineStickers: [
+    'https://em-content.zobj.net/source/apple/391/star_2b50.png',
+    'https://em-content.zobj.net/source/apple/391/sparkling-heart_1f496.png',
+    'https://em-content.zobj.net/source/apple/391/rainbow_1f308.png',
+    'https://em-content.zobj.net/source/apple/391/butterfly_1f98b.png',
+    'https://em-content.zobj.net/source/apple/391/cherry-blossom_1f338.png',
+    'https://em-content.zobj.net/source/apple/391/sun_2600-fe0f.png',
+    'https://em-content.zobj.net/source/apple/391/crescent-moon_1f319.png',
+    'https://em-content.zobj.net/source/apple/391/cloud_2601-fe0f.png',
+    'https://em-content.zobj.net/source/apple/391/fire_1f525.png',
+    'https://em-content.zobj.net/source/apple/391/red-heart_2764-fe0f.png',
+    'https://em-content.zobj.net/source/apple/391/glowing-star_1f31f.png',
+    'https://em-content.zobj.net/source/apple/391/sparkles_2728.png',
+    'https://em-content.zobj.net/source/apple/391/tulip_1f337.png',
+    'https://em-content.zobj.net/source/apple/391/rose_1f339.png',
+    'https://em-content.zobj.net/source/apple/391/hibiscus_1f33a.png',
+    'https://em-content.zobj.net/source/apple/391/sunflower_1f33b.png',
+    'https://em-content.zobj.net/source/apple/391/smiling-face-with-hearts_1f970.png',
+    'https://em-content.zobj.net/source/apple/391/face-blowing-a-kiss_1f618.png',
+    'https://em-content.zobj.net/source/apple/391/cat-with-tears-of-joy_1f639.png',
+    'https://em-content.zobj.net/source/apple/391/dog-face_1f436.png'
   ],
   
   // Sticker base path
@@ -774,21 +798,19 @@ async function loadAllStickers() {
   const grid = document.getElementById('stickerGrid');
   const basePath = CONFIG.stickerBasePath;
   
-  // Use the static list of sticker files
-  const allStickers = CONFIG.stickerFiles.map((filename, index) => ({
+  // Combine local stickers + online backup stickers
+  const localStickers = CONFIG.stickerFiles.map((filename, index) => ({
     src: basePath + filename,
     name: `sticker-${index + 1}`
   }));
   
-  if (allStickers.length === 0) {
-    grid.innerHTML = `
-      <div class="sticker-empty-state">
-        <p>No stickers yet!</p>
-        <p class="sticker-hint">Add PNG files to:<br><code>assets/stickers/</code></p>
-      </div>
-    `;
-    return;
-  }
+  const onlineStickers = CONFIG.onlineStickers.map((url, index) => ({
+    src: url,
+    name: `emoji-${index + 1}`
+  }));
+  
+  // Use online stickers + local stickers
+  const allStickers = [...onlineStickers, ...localStickers];
   
   grid.innerHTML = allStickers.map((sticker) => `
     <div class="sticker-item" data-src="${sticker.src}" data-name="${sticker.name}" draggable="true">
