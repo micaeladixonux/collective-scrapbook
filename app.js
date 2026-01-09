@@ -12,17 +12,15 @@ const CONFIG = {
   defaultBrushSize: 4,
   defaultBrushColor: '#1a1a1a',
   
-  // PNG sticker packs - add your own PNGs to assets/stickers/{category}/
-  stickerPacks: {
-    'stars': [],      // Add PNGs to assets/stickers/stars/
-    'hearts': [],     // Add PNGs to assets/stickers/hearts/
-    'vintage': [],    // Add PNGs to assets/stickers/vintage/
-    'travel': [],     // Add PNGs to assets/stickers/travel/
-    'food': [],       // Add PNGs to assets/stickers/food/
-    'flowers': [],    // Add PNGs to assets/stickers/flowers/
-    'characters': [], // Add PNGs to assets/stickers/characters/
-    'shapes': [],     // Add PNGs to assets/stickers/shapes/
-  },
+  // Static list of sticker files (more reliable than guessing)
+  stickerFiles: [
+    '05.png', '06.png', '07.png', '08.png', '09.png',
+    '10.png', '11.png', '12.png', '13.png', '14.png',
+    '15.png', '16.png', '17.png', '18.png', '19.png',
+    '20.png', '21.png', '22.png', '23.png', '24.png',
+    '25.png', '26.png', '27.png', '28.png', '29.png',
+    '30.png', '31.png', '32.png', '33.png', '34.png'
+  ],
   
   // Sticker base path
   stickerBasePath: 'assets/stickers/',
@@ -774,18 +772,13 @@ function initStickers() {
 
 async function loadAllStickers() {
   const grid = document.getElementById('stickerGrid');
-  const allStickers = [];
+  const basePath = CONFIG.stickerBasePath;
   
-  // Load from main stickers folder (all PNGs directly in assets/stickers/)
-  const mainStickers = await loadStickersFromMainFolder();
-  allStickers.push(...mainStickers);
-  
-  // Also check subfolders
-  const subfolders = ['stars', 'hearts', 'vintage', 'travel', 'food', 'flowers', 'characters', 'shapes'];
-  for (const folder of subfolders) {
-    const folderStickers = await loadStickersFromFolder(folder);
-    allStickers.push(...folderStickers);
-  }
+  // Use the static list of sticker files
+  const allStickers = CONFIG.stickerFiles.map((filename, index) => ({
+    src: basePath + filename,
+    name: `sticker-${index + 1}`
+  }));
   
   if (allStickers.length === 0) {
     grid.innerHTML = `
@@ -799,7 +792,7 @@ async function loadAllStickers() {
   
   grid.innerHTML = allStickers.map((sticker) => `
     <div class="sticker-item" data-src="${sticker.src}" data-name="${sticker.name}" draggable="true">
-      <img src="${sticker.src}" alt="${sticker.name}" loading="lazy" />
+      <img src="${sticker.src}" alt="${sticker.name}" loading="lazy" onerror="this.parentElement.style.display='none'" />
     </div>
   `).join('');
 
