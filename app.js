@@ -221,7 +221,9 @@ function initSaveShare() {
   loadScrapbook();
 }
 
-function saveScrapbook() {
+function saveScrapbook(showMessage = true) {
+  if (!state.leftCanvas || !state.rightCanvas) return;
+  
   const scrapbookData = {
     version: 1,
     color: localStorage.getItem('scrapbook-color') || 'red',
@@ -239,7 +241,12 @@ function saveScrapbook() {
   }
   
   // Save to localStorage
-  localStorage.setItem('scrapbook-data', JSON.stringify(scrapbookData));
+  try {
+    localStorage.setItem('scrapbook-data', JSON.stringify(scrapbookData));
+  } catch (e) {
+    console.error('Failed to save:', e);
+    return;
+  }
   
   // Animate save button
   const saveBtn = document.getElementById('saveBtn');
@@ -249,8 +256,19 @@ function saveScrapbook() {
     setTimeout(() => saveBtn.classList.remove('save-success'), 500);
   }
   
-  // Show save confirmation
-  showNotification('scrapbook saved!');
+  // Show save confirmation only if requested
+  if (showMessage) {
+    showNotification('scrapbook saved!');
+  }
+}
+
+// Auto-save after changes (debounced)
+let autoSaveTimeout = null;
+function autoSave() {
+  if (autoSaveTimeout) clearTimeout(autoSaveTimeout);
+  autoSaveTimeout = setTimeout(() => {
+    saveScrapbook(false); // Save without showing message
+  }, 2000); // Save 2 seconds after last change
 }
 
 function loadScrapbook() {
@@ -524,8 +542,9 @@ function setupCanvasEvents(canvas) {
     }
   });
 
-  canvas.on('object:modified', saveHistory);
-  canvas.on('object:added', saveHistory);
+  canvas.on('object:modified', () => { saveHistory(); autoSave(); });
+  canvas.on('object:added', () => { saveHistory(); autoSave(); });
+  canvas.on('text:changed', autoSave);
 
   canvas.on('selection:created', (e) => { state.selectedObject = e.selected[0]; });
   canvas.on('selection:updated', (e) => { state.selectedObject = e.selected[0]; });
@@ -713,8 +732,11 @@ function eraserHandler(opt) {
   const canvas = opt.target ? opt.target.canvas : this;
   if (opt.target && state.activeTool === 'eraser') {
     canvas.remove(opt.target);
+    canvas.discardActiveObject();
     canvas.renderAll();
     saveHistory();
+    autoSave();
+    showNotification('deleted!');
   }
 }
 
@@ -916,11 +938,23 @@ function checkImageExists(url) {
 
 function addStickerToCanvas(src, x = null, y = null, scale = 1) {
   const canvas = state.activeCanvas;
+  if (!canvas) {
+    console.error('No active canvas');
+    return;
+  }
+  
+  // Use crossOrigin only for same-origin images
+  const options = src.startsWith('http') ? { crossOrigin: 'anonymous' } : {};
   
   fabric.Image.fromURL(src, (img) => {
+    if (!img) {
+      console.error('Failed to load image:', src);
+      return;
+    }
+    
     // Scale sticker to reasonable size (max 80px)
     const maxSize = 80 * scale;
-    const imgScale = Math.min(maxSize / img.width, maxSize / img.height);
+    const imgScale = Math.min(maxSize / (img.width || 100), maxSize / (img.height || 100));
     
     const posX = x || canvas.width / 2 + (Math.random() - 0.5) * 100;
     const posY = y || canvas.height / 2 + (Math.random() - 0.5) * 100;
@@ -932,21 +966,17 @@ function addStickerToCanvas(src, x = null, y = null, scale = 1) {
       scaleY: imgScale,
       originX: 'center',
       originY: 'center',
-      angle: (Math.random() - 0.5) * 25,
-      opacity: 0 // Start invisible for animation
+      angle: (Math.random() - 0.5) * 25
     });
+    
     canvas.add(img);
     canvas.setActiveObject(img);
+    canvas.renderAll();
     
-    // Animate the sticker appearing with bounce
-    animateStickerIn(img, canvas);
+    // Auto-save after adding sticker
+    autoSave();
     
-    // Create sparkles at the placement location
-    const canvasEl = canvas.getElement();
-    const rect = canvasEl.getBoundingClientRect();
-    createSparkles(rect.left + posX, rect.top + posY, 8);
-    
-  }, { crossOrigin: 'anonymous' });
+  }, options);
 }
 
 // Animate sticker placement
@@ -1893,7 +1923,7 @@ function initTextTools() {
 
 function addTextBox() {
   const canvas = state.activeCanvas;
-  const textbox = new fabric.Textbox('Type here...', {
+  const textbox = new fabric.Textbox('type here...', {
     left: canvas.width / 2,
     top: canvas.height / 2,
     width: 180,
@@ -1902,7 +1932,8 @@ function addTextBox() {
     fill: '#1a1a1a',
     originX: 'center',
     originY: 'center',
-    textAlign: 'center'
+    textAlign: 'center',
+    editable: true
   });
 
   canvas.add(textbox);
@@ -1910,6 +1941,7 @@ function addTextBox() {
   textbox.enterEditing();
   textbox.selectAll();
   canvas.renderAll();
+  autoSave();
 }
 
 function addStickyNote() {
@@ -1917,33 +1949,30 @@ function addStickyNote() {
   const colors = ['#FFFF88', '#FFB5C5', '#87CEEB', '#98FB98', '#DDA0DD', '#FFD700'];
   const color = colors[Math.floor(Math.random() * colors.length)];
   
-  const rect = new fabric.Rect({
-    width: 130,
-    height: 130,
-    fill: color,
-    shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.15)', blur: 8, offsetX: 3, offsetY: 3 })
-  });
-
-  const text = new fabric.Textbox('Note...', {
-    width: 110,
-    fontSize: 15,
-    fontFamily: state.activeFont,
-    fill: '#333',
-    left: 10,
-    top: 15
-  });
-
-  const group = new fabric.Group([rect, text], {
+  // Create editable textbox with background color
+  const textbox = new fabric.Textbox('click to edit...', {
     left: canvas.width / 2,
     top: canvas.height / 2,
+    width: 120,
+    fontSize: 14,
+    fontFamily: state.activeFont,
+    fill: '#333',
+    backgroundColor: color,
+    padding: 12,
     originX: 'center',
     originY: 'center',
-    angle: (Math.random() - 0.5) * 12
+    angle: (Math.random() - 0.5) * 12,
+    shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.15)', blur: 8, offsetX: 3, offsetY: 3 }),
+    editable: true
   });
 
-  canvas.add(group);
-  canvas.setActiveObject(group);
+  canvas.add(textbox);
+  canvas.setActiveObject(textbox);
+  // Enter editing mode immediately
+  textbox.enterEditing();
+  textbox.selectAll();
   canvas.renderAll();
+  autoSave();
 }
 
 function addLabel() {
@@ -2307,20 +2336,28 @@ function handleContextAction(action) {
 
 function handleKeyboard(e) {
   const canvas = state.activeCanvas;
+  if (!canvas) return;
   
+  // Delete selected object
   if ((e.key === 'Delete' || e.key === 'Backspace') && !e.target.matches('input, textarea, [contenteditable]')) {
     const obj = canvas.getActiveObject();
     if (obj && !obj.isEditing) {
+      e.preventDefault();
       canvas.remove(obj);
+      canvas.discardActiveObject();
       canvas.renderAll();
+      autoSave();
     }
   }
   
+  // Undo/Redo
   if (e.ctrlKey || e.metaKey) {
     if (e.key === 'z') { e.preventDefault(); undo(); }
     if (e.key === 'y') { e.preventDefault(); redo(); }
+    if (e.key === 's') { e.preventDefault(); saveScrapbook(); } // Cmd+S to save
   }
   
+  // Escape to deselect and exit drawing mode
   if (e.key === 'Escape') {
     canvas.discardActiveObject();
     exitDrawingMode();
