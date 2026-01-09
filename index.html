@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Collective Scrapbook - Create Together</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Caveat:wght@400;500;600;700&family=Gloria+Hallelujah&family=Indie+Flower&family=Patrick+Hand&family=Permanent+Marker&family=Reenie+Beanie&family=Shadows+Into+Light&family=Special+Elite&family=Zeyada&family=Homemade+Apple&family=Rock+Salt&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Top Toolbar -->
+    <header class="toolbar">
+      <div class="toolbar-left">
+        <div class="logo">
+          <span class="logo-icon"></span>
+          <span class="logo-text">collective scrapbook</span>
+        </div>
+      </div>
+      <div class="toolbar-center">
+        <div class="notebook-colors">
+          <span class="color-label">cover:</span>
+          <button class="color-swatch active" data-color="red" style="background: #8B2323;" title="red"></button>
+          <button class="color-swatch" data-color="blue" style="background: #1a3a5c;" title="deep blue"></button>
+          <button class="color-swatch" data-color="brown-dark" style="background: #3d2314;" title="dark brown"></button>
+          <button class="color-swatch" data-color="brown-light" style="background: #8B6914;" title="tan"></button>
+          <button class="color-swatch" data-color="green" style="background: #2d4a3e;" title="forest green"></button>
+        </div>
+      </div>
+      <div class="toolbar-right">
+        <button class="btn-icon" title="undo" id="undoBtn"><span class="icon-undo"></span></button>
+        <button class="btn-icon" title="redo" id="redoBtn"><span class="icon-redo"></span></button>
+        <button class="btn-icon" title="save" id="saveBtn"><span class="icon-save"></span></button>
+        <button class="btn-icon" title="share link" id="shareBtn"><span class="icon-share"></span></button>
+        <button class="btn-icon export-btn" title="export" id="exportBtn"><span class="icon-export"></span></button>
+      </div>
+    </header>
+
+    <!-- Page Navigation -->
+    <nav class="page-nav">
+      <button class="nav-arrow prev" title="Previous page">‹</button>
+      <div class="page-tabs">
+        <button class="page-tab active" data-page="1">
+          <span class="tab-num">1</span>
+        </button>
+        <button class="page-tab" data-page="2">
+          <span class="tab-num">2</span>
+        </button>
+        <button class="page-tab add-page" title="Add new page">+</button>
+      </div>
+      <button class="nav-arrow next" title="Next page">›</button>
+    </nav>
+
+    <!-- Main Canvas Area -->
+    <main class="canvas-container">
+      <!-- Vintage Papers Layer (underneath everything) -->
+      <div class="vintage-papers">
+        <div class="vintage-paper"></div>
+        <div class="vintage-paper"></div>
+      </div>
+
+      <!-- Scattered Polaroid Photos (beneath the book) -->
+      <div class="scattered-photos">
+        <div class="scattered-photo">
+          <img src="https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=200&h=150&fit=crop" alt="Flowers">
+        </div>
+        <div class="scattered-photo">
+          <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200&h=150&fit=crop" alt="Mountains">
+        </div>
+        <div class="scattered-photo">
+          <img src="https://images.unsplash.com/photo-1501854140801-50d01698950b?w=200&h=150&fit=crop" alt="Forest">
+        </div>
+        <div class="scattered-photo">
+          <img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?w=200&h=150&fit=crop" alt="Night sky">
+        </div>
+        <div class="scattered-photo">
+          <img src="https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=200&h=150&fit=crop" alt="Ocean">
+        </div>
+        <div class="scattered-photo">
+          <img src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=200&h=150&fit=crop" alt="Lake">
+        </div>
+        <!-- Decorative stickers around polaroids -->
+        <div class="decorative-sticker" id="decoSticker1"></div>
+        <div class="decorative-sticker" id="decoSticker2"></div>
+        <div class="decorative-sticker" id="decoSticker3"></div>
+        <div class="decorative-sticker" id="decoSticker4"></div>
+        <div class="decorative-sticker" id="decoSticker5"></div>
+      </div>
+
+      <!-- The Scrapbook - Red Hardcover Book -->
+      <div class="scrapbook-wrapper" id="scrapbookWrapper">
+        <!-- Paper Clip -->
+        <div class="paper-clip">
+          <svg viewBox="0 0 40 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20 5 C8 5 3 15 3 30 L3 75 C3 90 10 95 20 95 C30 95 37 90 37 75 L37 25 C37 15 32 10 25 10 C18 10 13 15 13 25 L13 70" 
+                  stroke="#9CA3AF" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <path d="M20 5 C8 5 3 15 3 30 L3 75 C3 90 10 95 20 95 C30 95 37 90 37 75 L37 25 C37 15 32 10 25 10 C18 10 13 15 13 25 L13 70" 
+                  stroke="#E5E7EB" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <!-- The Book -->
+        <div class="scrapbook-book">
+          <!-- Page stack effect at bottom -->
+          <div class="page-stack"></div>
+          
+          <!-- Left Page -->
+          <div class="book-page left-page" id="leftPage">
+            <div class="canvas-overlay">
+              <canvas id="canvas-left" class="scrapbook-canvas"></canvas>
+            </div>
+          </div>
+          
+          <!-- Right Page -->
+          <div class="book-page right-page" id="rightPage">
+            <div class="canvas-overlay">
+              <canvas id="canvas-right" class="scrapbook-canvas"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Supplies Drawer -->
+    <div class="supplies-drawer" id="suppliesDrawer">
+      <div class="drawer-handle" id="drawerHandle">
+        <div class="handle-grip"></div>
+        <span class="handle-label">supplies</span>
+      </div>
+      <div class="drawer-content">
+        <div class="drawer-tabs">
+          <button class="drawer-tab active" data-category="photos">
+            <span>photos</span>
+          </button>
+          <button class="drawer-tab" data-category="stickers">
+            <span>stickers</span>
+          </button>
+          <button class="drawer-tab" data-category="ai-stickers">
+            <span>ai create</span>
+          </button>
+          <button class="drawer-tab" data-category="tape">
+            <span>tape</span>
+          </button>
+          <button class="drawer-tab" data-category="pens">
+            <span>pens</span>
+          </button>
+          <button class="drawer-tab" data-category="text">
+            <span>text</span>
+          </button>
+        </div>
+        
+        <div class="drawer-compartments">
+          <!-- Photos Compartment -->
+          <div class="compartment active" data-category="photos">
+            <div class="compartment-section">
+              <h4>upload photos</h4>
+              <div class="upload-zone" id="uploadZone">
+                <span class="upload-icon"></span>
+                <span>drop images or click to upload</span>
+                <input type="file" id="fileInput" accept="image/*" multiple hidden>
+              </div>
+              <h4>frame style</h4>
+              <div class="frame-options">
+                <div class="frame-option active" data-frame="polaroid" title="polaroid">
+                  <span class="frame-icon polaroid-icon"></span>
+                  <span>polaroid</span>
+                </div>
+                <div class="frame-option" data-frame="film" title="film strip">
+                  <span class="frame-icon film-icon"></span>
+                  <span>film</span>
+                </div>
+                <div class="frame-option" data-frame="torn" title="torn edge">
+                  <span class="frame-icon torn-icon"></span>
+                  <span>torn</span>
+                </div>
+                <div class="frame-option" data-frame="none" title="no frame">
+                  <span class="frame-icon none-icon"></span>
+                  <span>none</span>
+                </div>
+              </div>
+            </div>
+            <div class="compartment-section">
+              <h4>your photos</h4>
+              <div class="photo-grid" id="photoGrid"></div>
+            </div>
+          </div>
+
+          <!-- Stickers Compartment -->
+          <div class="compartment" data-category="stickers">
+            <div class="compartment-section">
+              <div class="sticker-grid" id="stickerGrid"></div>
+            </div>
+          </div>
+
+          <!-- AI Sticker Generator Compartment -->
+          <div class="compartment" data-category="ai-stickers">
+            <div class="compartment-section">
+              <h4>ai sticker generator</h4>
+              <div class="ai-generator">
+                <div class="ai-input-wrapper">
+                  <input type="text" id="aiStickerPrompt" class="ai-prompt-input" placeholder="describe your sticker... (e.g., cute cat with sunglasses)">
+                  <button class="ai-generate-btn" id="generateStickerBtn">generate</button>
+                </div>
+                <div class="ai-style-options">
+                  <button class="ai-style active" data-style="kawaii">kawaii</button>
+                  <button class="ai-style" data-style="vintage">vintage</button>
+                  <button class="ai-style" data-style="minimal">minimal</button>
+                  <button class="ai-style" data-style="retro">retro</button>
+                </div>
+                <div class="ai-generated-stickers" id="aiGeneratedStickers">
+                  <p class="ai-placeholder">your ai-generated stickers will appear here</p>
+                </div>
+              </div>
+            </div>
+            <div class="compartment-section">
+              <h4>recent creations</h4>
+              <div class="ai-history-grid" id="aiHistoryGrid"></div>
+            </div>
+          </div>
+
+          <!-- Tape Compartment -->
+          <div class="compartment" data-category="tape">
+            <div class="compartment-section">
+              <h4>washi tape strips</h4>
+              <div class="tape-strips" id="tapeStrips">
+                <div class="tape-strip pink-stripe" data-pattern="pink-stripe" draggable="true"></div>
+                <div class="tape-strip blue-dots" data-pattern="blue-dots" draggable="true"></div>
+                <div class="tape-strip washi-floral" data-pattern="washi-floral" draggable="true"></div>
+                <div class="tape-strip gingham" data-pattern="gingham" draggable="true"></div>
+                <div class="tape-strip gold-foil" data-pattern="gold-foil" draggable="true"></div>
+                <div class="tape-strip kraft-tape" data-pattern="kraft-tape" draggable="true"></div>
+                <div class="tape-strip clear-tape" data-pattern="clear-tape" draggable="true"></div>
+              </div>
+              <h4>masking tape</h4>
+              <div class="tape-strips">
+                <div class="tape-strip masking-tape" data-pattern="masking" draggable="true" style="transform: rotate(-3deg)"></div>
+                <div class="tape-strip masking-tape" data-pattern="masking" draggable="true" style="transform: rotate(5deg)"></div>
+              </div>
+            </div>
+            <div class="compartment-section">
+              <h4>fasteners</h4>
+              <div class="fasteners-grid">
+                <button class="fastener" data-type="paperclip"><span class="fastener-icon paperclip-icon"></span></button>
+                <button class="fastener" data-type="pushpin"><span class="fastener-icon pushpin-icon"></span></button>
+                <button class="fastener" data-type="binder"><span class="fastener-icon binder-icon"></span></button>
+                <button class="fastener" data-type="staple"><span class="fastener-icon staple-icon"></span></button>
+              </div>
+              <h4>photo corners</h4>
+              <div class="fasteners-grid">
+                <button class="fastener" data-type="corner-black"><span class="fastener-icon corner-icon black"></span></button>
+                <button class="fastener" data-type="corner-gold"><span class="fastener-icon corner-icon gold"></span></button>
+                <button class="fastener" data-type="corner-white"><span class="fastener-icon corner-icon white"></span></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pens Compartment -->
+          <div class="compartment" data-category="pens">
+            <div class="compartment-section">
+              <h4>drawing tools</h4>
+              <div class="pen-selection">
+                <button class="pen-tool" data-tool="select">
+                  <span class="pen-preview select"></span>
+                  <span>select</span>
+                </button>
+                <button class="pen-tool active" data-tool="marker">
+                  <span class="pen-preview marker"></span>
+                  <span>marker</span>
+                </button>
+                <button class="pen-tool" data-tool="pencil">
+                  <span class="pen-preview pencil"></span>
+                  <span>pencil</span>
+                </button>
+                <button class="pen-tool" data-tool="highlighter">
+                  <span class="pen-preview highlighter"></span>
+                  <span>highlighter</span>
+                </button>
+                <button class="pen-tool" data-tool="eraser">
+                  <span class="pen-preview eraser"></span>
+                  <span>eraser</span>
+                </button>
+              </div>
+              <div class="pen-settings">
+                <div class="color-palette">
+                  <button class="color-swatch active" style="background: #1a1a1a;" data-color="#1a1a1a"></button>
+                  <button class="color-swatch" style="background: #FFFFFF; border: 1px solid #ccc;" data-color="#FFFFFF"></button>
+                  <button class="color-swatch" style="background: #FF6B6B;" data-color="#FF6B6B"></button>
+                  <button class="color-swatch" style="background: #E63946;" data-color="#E63946"></button>
+                  <button class="color-swatch" style="background: #FF8C42;" data-color="#FF8C42"></button>
+                  <button class="color-swatch" style="background: #FFD700;" data-color="#FFD700"></button>
+                  <button class="color-swatch" style="background: #98D8AA;" data-color="#98D8AA"></button>
+                  <button class="color-swatch" style="background: #4ECDC4;" data-color="#4ECDC4"></button>
+                  <button class="color-swatch" style="background: #87CEEB;" data-color="#87CEEB"></button>
+                  <button class="color-swatch" style="background: #AA96DA;" data-color="#AA96DA"></button>
+                  <button class="color-swatch" style="background: #FFB5C5;" data-color="#FFB5C5"></button>
+                  <button class="color-swatch" style="background: #8B4513;" data-color="#8B4513"></button>
+                </div>
+                <div class="brush-size">
+                  <label>size</label>
+                  <input type="range" min="1" max="40" value="4" id="brushSize">
+                  <span id="brushSizeValue">4px</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Text Compartment -->
+          <div class="compartment" data-category="text">
+            <div class="compartment-section">
+              <h4>magazine cutout letters</h4>
+              <div class="ransom-keyboard" id="ransomKeyboard"></div>
+              <div class="text-actions">
+                <button class="text-action" id="addTextBox">text box</button>
+                <button class="text-action" id="addStickyNote">sticky note</button>
+                <button class="text-action" id="addLabel">label</button>
+              </div>
+            </div>
+            <div class="compartment-section">
+              <h4>handwriting fonts</h4>
+              <div class="font-preview-list">
+                <button class="font-option active" data-font="Caveat" style="font-family: 'Caveat';">caveat aa bb cc</button>
+                <button class="font-option" data-font="Patrick Hand" style="font-family: 'Patrick Hand';">patrick hand</button>
+                <button class="font-option" data-font="Indie Flower" style="font-family: 'Indie Flower';">indie flower</button>
+                <button class="font-option" data-font="Permanent Marker" style="font-family: 'Permanent Marker';">permanent marker</button>
+                <button class="font-option" data-font="Gloria Hallelujah" style="font-family: 'Gloria Hallelujah';">gloria hallelujah</button>
+                <button class="font-option" data-font="Homemade Apple" style="font-family: 'Homemade Apple';">homemade apple</button>
+                <button class="font-option" data-font="Rock Salt" style="font-family: 'Rock Salt';">rock salt</button>
+                <button class="font-option" data-font="Special Elite" style="font-family: 'Special Elite';">special elite</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Context Menu -->
+    <div class="context-menu" id="contextMenu">
+      <button class="context-item" data-action="bringToFront">bring to front</button>
+      <button class="context-item" data-action="sendToBack">send to back</button>
+      <div class="context-divider"></div>
+      <button class="context-item" data-action="duplicate">duplicate</button>
+      <button class="context-item" data-action="flip">flip</button>
+      <div class="context-divider"></div>
+      <button class="context-item" data-action="addTape">add tape</button>
+      <button class="context-item" data-action="changeFrame">change frame</button>
+      <div class="context-divider"></div>
+      <button class="context-item delete" data-action="delete">delete</button>
+    </div>
+
+    <!-- Loading Overlay with Opening Animation -->
+    <div class="loading-overlay" id="loadingOverlay">
+      <div class="opening-animation">
+        <div class="animated-book" id="animatedBook">
+          <div class="book-cover-back"></div>
+          <div class="book-pages-stack"></div>
+          <div class="book-cover-front">
+            <div class="cover-texture"></div>
+            <div class="cover-title">my scrapbook</div>
+          </div>
+        </div>
+        <p class="opening-text">opening your memories...</p>
+        <p class="skip-hint">click anywhere to skip</p>
+      </div>
+    </div>
+
+    <!-- Remote Cursors -->
+    <div class="remote-cursors" id="remoteCursors"></div>
+  </div>
+
+  <!-- Fabric.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+  
+  <!-- Supabase for real-time collaboration -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <!-- App Scripts -->
+  <script src="supabase-config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
