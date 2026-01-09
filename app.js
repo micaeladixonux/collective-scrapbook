@@ -819,12 +819,22 @@ async function loadStickersFromMainFolder() {
   const basePath = CONFIG.stickerBasePath;
   const stickers = [];
   
-  // Try numbered files (1.png through 50.png)
+  // Try numbered files (1.png through 50.png) - both with and without leading zeros
   for (let i = 1; i <= 50; i++) {
-    const filename = `${i}.png`;
-    const exists = await checkImageExists(basePath + filename);
-    if (exists) {
-      stickers.push({ src: basePath + filename, name: `sticker-${i}` });
+    // Try without leading zero: 1.png, 2.png, etc.
+    const filename1 = `${i}.png`;
+    const exists1 = await checkImageExists(basePath + filename1);
+    if (exists1) {
+      stickers.push({ src: basePath + filename1, name: `sticker-${i}` });
+    }
+    
+    // Try with leading zero: 01.png, 02.png, etc.
+    const filename2 = `${String(i).padStart(2, '0')}.png`;
+    if (filename2 !== filename1) {
+      const exists2 = await checkImageExists(basePath + filename2);
+      if (exists2) {
+        stickers.push({ src: basePath + filename2, name: `sticker-${i}` });
+      }
     }
   }
   
